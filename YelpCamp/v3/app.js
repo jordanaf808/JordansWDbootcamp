@@ -6,46 +6,52 @@
 // const mongoose = require("mongoose");
 // const port = 3000
 
-const express    =  require("express"),
-	  app        = express(),
-	  axios      = require("axios").default,
-	  bodyParser = require("body-parser"),
-	  mongoose   = require("mongoose"),
-	  Campground = require("./models/campground"),
-	  seedDB	 = require("./seeds"),
-	  port       = 3000;
+const express    	= require("express"),
+			path 				= require('path'),
+	  	app        	= express(),
+	  	axios      	= require("axios").default,
+	  	bodyParser 	= require("body-parser"),
+			mongoose   	= require("mongoose"),
+			engine			= require('ejs-mate'),
+	  	Campground 	= require("./models/campground"),
+			seedDB	 		= require("./seeds"),
+			db 					= mongoose.connection,
+			port       	= 3000;
 
-
-mongoose.connect("mongodb://localhost:27017/yelp_camp", {
+	mongoose.connect("mongodb://localhost:27017/yelp_camp_v11", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-	useFindAndModify: false,
+	// useFindAndModify: false,
 	useCreateIndex: true
 })
-.then(() => console.log('Connected to DB!'))
-.catch(error => console.log(error.message));
+
+db.on("error", console.error,bind(console, "connection error:"));
+db.once("open", () => {
+	console.log("Database connected");
+});
+
+// const connectDB = async () =>{
+// 	try {
+// 	const conn = await mongoose.connect(process.env.MONGO_URI, {
+// 		useNewUrlParser: true,
+// 		useUnifiedTopology: true,
+// 		useFindAndModify: false,
+// 		// useCreateIndex: true
+// 	})
+// 	console.log(`MongoDB Connected: ${conn.connection.host}`)
+// 	} catch(error){
+// 		console.log(error.message)
+// 	};
+// }
+
+// connectDB()
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 app.set("view engine", "ejs");
+app.set('views', path.join(__dirname, 'views'))
 
-seedDB();
-
-//old seed data
-// Campground.create(
-// {
-// 	name:"Kirk Creek Campground", 
-//  	image: "/images/peter-vanosdall-6pVTxAaX448-unsplash.jpg",
-// 	description: "This is a huge granite hill!"
-// }, 
-// 	(err, campground) => {
-// 	if(err){
-// 		console.log(err);
-// 	} else {
-// 		console.log("New Campground Created: ");
-// 		console.log(campground);
-// 	}
-// });
+// seedDB();
 
 const campgrounds = [
 		// {name: "Ponderosa Campground", image: "/images/IMG_6086.jpg"},
@@ -61,32 +67,31 @@ app.get("/", (req, res) => {
 		});
 
 //INDEX - show all campgrounds
-app.get("/campgrounds", (req, res) => {	
+app.get("/campgrounds", async (req, res) => {	
 // 	get all campgrounds from DB
-		Campground.find({}, (err, allCampgrounds) => {
-	  if (err) return console.error(err);
-	  else {
-		  res.render("index", {campgrounds:allCampgrounds});
-	  }
-	});
+		const campgrounds = await Campground.find({});
+		res.render("index", {campgrounds:allCampgrounds});
 });
 
 // CREATE a new campground.
 app.post("/campgrounds", (req, res) => {
-	//get data from form and add to campgrounds array
-	const name = req.body.name;
-	const image = req.body.image;
-	const desc = req.body.description;
-	const newCampground = {name: name, image: image, description: desc}
-	// create a new campground and save to DB
-	Campground.create(newCampground, (err, newlyCreated) => {
-		if(err){
-		console.log(err);
-		} else {
-		//redirect back to campgrounds array
-		res.redirect("/campgrounds"); 		 
-		}
-	});
+	const campground = new Campground(req.body,campground);
+	await campground.save();
+	res.redirect(`/campgrounds/${campground._id}`)
+	// //get data from form and add to campgrounds array
+	// const name = req.body.name;
+	// const image = req.body.image;
+	// const desc = req.body.description;
+	// const newCampground = {name: name, image: image, description: desc}
+	// // create a new campground and save to DB
+	// Campground.create(newCampground, (err, newlyCreated) => {
+	// 	if(err){
+	// 	console.log(err);
+	// 	} else {
+	// 	//redirect back to campgrounds array
+	// 	res.redirect("/campgrounds"); 		 
+	// 	}
+	// });
 });
 
 app.get("/campgrounds/new", (req, res) => {
