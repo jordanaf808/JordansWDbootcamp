@@ -1,5 +1,5 @@
-<%- include("partials/header") %>
-<h1><%=campground.name%></h1>
+<% layout('layouts/boilerplate.ejs')%>
+<h1><%= campground.name %></h1>
 
 <img src="<%= campground.image %>">
 
@@ -10,5 +10,5 @@
 		<strong><%= comment.author %></strong> - <%= comment.text %>
 	</p>
 <% }); %>
+<p><a href="/campgrounds/<%=campground._id%>/edit">Edit</a></p>
 <a href="/campgrounds">Go Back To Campgrounds.</a>
-<%- include("partials/footer") %>

@@ -2,12 +2,14 @@ const express = require("express");
 const app = express();
 const axios = require('axios').default;
 const bodyParser = require("body-parser");
+const path = require('path');
 const port = 3000
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
 app.set("view engine", "ejs");
+app.set('views', path.join(__dirname, 'views'))
 
 const campgrounds = [
 		{name: "Ponderosa Campground", image: "/images/IMG_6086.jpg"},
@@ -41,4 +43,6 @@ app.get("/campgrounds/new", (req, res) => {
 	res.render("new.ejs");
 });
 
-app.listen(port, () => console.log(`YelpCamp listening at ${port}`))
+app.listen(port, () => {
+	console.log(`YelpCamp listening at ${port}`)
+})

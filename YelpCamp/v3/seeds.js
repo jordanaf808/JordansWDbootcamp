@@ -24,44 +24,44 @@ const seeds = [
 // Await waits for that code to run before we continue. 
 //Wrap the code in a 'Try, Catch' to catch any errors while running this code.
 
-const seedDB = async () => {
-	await Campground.deleteMany({});
-	const c = new Campground({ title: 'purple field'});
-	await c.save();
-}
-
-
-// async function seedDB(){
-// 	try {
-// 		//Remove all campgrounds and comments
-// 		await Campground.deleteMany({});
-// 		console.log("deleted a campground");
-// 	   await Comment.deleteMany({});
-// 		console.log("deleted a comment");
-
-// 	//'For Of Loop' for each item ('seed') in the 'seeds' array, do this...
-// 	   for(const seed of seeds) {
-// 	//create a campground for each seed using the 'Campground' model. 
-// 			let campground = await Campground.create(seed);
-// 		   console.log("campground created");
-// 	//create a comment using the 'Comment' model.
-// 			let comment = await Comment.create(
-// 				{
-// 					text: "This place is great, but I wish there was internet",
-// 					author: "Homer"
-// 				}
-// 	//Push each comment into the campground.comments array, then save.			
-// 			)   
-// 			console.log("comment created");
-// 			campground.comments.push(comment);
-// 		   console.log("comment saved in campground array");
-// 		    campground.save();
-// 		   console.log("campground saved")
-// 	   }
-// 	} catch(err) {
-// 		console.log(err);
-// 	}
+// const seedDB = async () => {
+// 	await Campground.deleteMany({});
+// 	const c = new Campground({ title: 'purple field'});
+// 	await c.save();
 // }
+
+
+async function seedDB(){
+	try {
+		//Remove all campgrounds and comments
+		await Campground.deleteMany({});
+		console.log("deleted a campground");
+	   await Comment.deleteMany({});
+		console.log("deleted a comment");
+
+	//'For Of Loop' for each item ('seed') in the 'seeds' array, do this...
+	   for(const seed of seeds) {
+	//create a campground for each seed using the 'Campground' model. 
+			let campground = await Campground.create(seed);
+		   console.log("campground created");
+	//create a comment using the 'Comment' model.
+			let comment = await Comment.create(
+				{
+					text: "This place is great, but I wish there was internet",
+					author: "Homer"
+				}
+	//Push each comment into the campground.comments array, then save.			
+			)   
+			console.log("comment created");
+			campground.comments.push(comment);
+		   console.log("comment saved in campground array");
+		    campground.save();
+		   console.log("campground saved")
+	   }
+	} catch(err) {
+		console.log(err);
+	}
+}
   
 module.exports = seedDB;           
 

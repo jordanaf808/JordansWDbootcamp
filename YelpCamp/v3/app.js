@@ -1,18 +1,12 @@
-//You can consolidate different 'const's...
-// const express = require("express");
-// const app = express();
-// const axios = require('axios').default;
-// const bodyParser = require("body-parser");
-// const mongoose = require("mongoose");
-// const port = 3000
 
 const express    	= require("express"),
-			path 				= require('path'),
+			path 				= require("path"),
 	  	app        	= express(),
 	  	axios      	= require("axios").default,
 	  	bodyParser 	= require("body-parser"),
 			mongoose   	= require("mongoose"),
-			engine			= require('ejs-mate'),
+			ejsMate			= require("ejs-mate"),
+			methodOverride = require("method-override"),
 	  	Campground 	= require("./models/campground"),
 			seedDB	 		= require("./seeds"),
 			db 					= mongoose.connection,
@@ -25,7 +19,7 @@ const express    	= require("express"),
 	useCreateIndex: true
 })
 
-db.on("error", console.error,bind(console, "connection error:"));
+db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", () => {
 	console.log("Database connected");
 });
@@ -48,10 +42,14 @@ db.once("open", () => {
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
-app.set("view engine", "ejs");
-app.set('views', path.join(__dirname, 'views'))
+app.use(methodOverride('_method'));
 
-// seedDB();
+app.engine('ejs', ejsMate);
+app.set("view engine", "ejs");
+app.set('views', path.join(__dirname, 'views'));
+
+
+seedDB();
 
 const campgrounds = [
 		// {name: "Ponderosa Campground", image: "/images/IMG_6086.jpg"},
@@ -62,20 +60,21 @@ const campgrounds = [
 		{name: "Yosemite National Park", image: "/images/aniket-deole-M6XC789HLe8-unsplash.jpg"}
 	];
 
-app.get("/", (req, res) => {
-		res.render("landing");
+app.get("/", async (req, res) => {
+	const campgrounds = await Campground.find({});
+	res.render("campgrounds/index", { campgrounds });
 		});
 
 //INDEX - show all campgrounds
 app.get("/campgrounds", async (req, res) => {	
 // 	get all campgrounds from DB
 		const campgrounds = await Campground.find({});
-		res.render("index", {campgrounds:allCampgrounds});
+		res.render("campgrounds/index", { campgrounds });
 });
 
 // CREATE a new campground.
-app.post("/campgrounds", (req, res) => {
-	const campground = new Campground(req.body,campground);
+app.post("/campgrounds", async (req, res) => {
+	const campground = new Campground(req.body.campground);
 	await campground.save();
 	res.redirect(`/campgrounds/${campground._id}`)
 	// //get data from form and add to campgrounds array
@@ -95,21 +94,55 @@ app.post("/campgrounds", (req, res) => {
 });
 
 app.get("/campgrounds/new", (req, res) => {
-	res.render("new.ejs");
+	res.render("campgrounds/new");
 });
 
 //SHOW - shows more info about one campground
-app.get("/campgrounds/:id", (req, res) => {
+app.get("/campgrounds/:id", async (req, res) => {
+	const campground = await Campground.findById(req.params.id)
+	res.render('campgrounds/show', {campground})
 	//find the campground by ID
-	Campground.findById(req.params.id).populate("comments").exec((err, foundCampground) => {
-		if(err){
-			console.log(err);
-		} else {
-			console.log(foundCampground);
-		//render show template with that campground
-		res.render("show", {campground: foundCampground});		
-		}
-	});
+	// Campground.findById(req.params.id).populate("comments").exec((err, foundCampground) => {
+	// 	if(err){
+	// 		console.log(err);
+	// 	} else {
+	// 		console.log(foundCampground);
+	// 	//render show template with that campground
+	// 	res.render("show", {campground: foundCampground});		
+	// 	}
+	// });
 });
+
+app.get('/campgrounds/:id/edit', async (req, res) => {
+	const campground = await Campground.findById(req.params.id)
+	res.render('campgrounds/edit', {campground})
+})
+
+app.put('/campgrounds/:id', async (req, res) => {
+	const { id } = req.params;
+	const campground = await Campground.findByIdAndUpdate(id,{ ...req.body.campground})
+	res.redirect(`/campgrounds/${campground._id}`)})
+
+//~~~~~ RIDB API ~~~~~//
+
+app.get('/campgrounds/:id/edit', async (req, res) => {
+	const campground = await Campground.findById(req.params.id)
+	res.render('recreation/index', {campground})
+})
+
+/ //get data from form and add to campsite array
+	// const name = req.body.name;
+	// const image = req.body.image;
+	// const desc = req.body.description;
+	// const newCampsite = {name: name, image: image, description: desc}
+	// // create a new campground and save to DB
+	// Campsite.create(newCampsite, (err, newlyCreated) => {
+	// 	if(err){
+	// 	console.log(err);
+	// 	} else {
+	// 	//redirect back to campsite array
+	// 	res.redirect("/recreation/index"); 		 
+	// 	}
+	// });
 
 app.listen(port, () => console.log(`YelpCamp listening at ${port}`))

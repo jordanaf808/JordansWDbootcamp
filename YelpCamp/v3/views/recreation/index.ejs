@@ -1,0 +1,51 @@
+<% layout('layouts/boilerplate.ejs')%>
+
+<div class="container">
+	<header class ="jumbotron">
+		<div class="container">
+			<h1>
+			Find A Campsite!
+			</h1>
+			<p>
+				Search Recreation.gov Database.
+			</p>
+			<p>
+				<a class="btn btn-primary btn-md" href="#">Submit A New Campground!</a>
+			</p>
+		</div>
+  </header>
+
+	<div class="row text-center" style="display:flex; flex-wrap: wrap;">
+		<% for (let campground of campgrounds){%>
+			<div class="col-md-3 col-sm-6">
+				<div class="thumbnail">
+					<img src="<%=campground.image%>">
+					<div class="caption">
+					<h4><%=campground.name%></h4>
+					</div>
+					<p>
+						<a href="/campgrounds/<%= campground._id %>" class="btn btn-primary">More Info</a>
+					</p>
+				</div>
+			</div>
+		<% } %>
+	</div>			
+</div>
+
+<div style="width: 30%; margin: 50px auto;">
+  <form action="/campgrounds" method="POST">
+<!-- Put each input in a div.formgroup to give a little spacing between them	 -->
+    <div class="form-group">
+      <input class="form-control" type="text" name="name" placeholder="name">
+    </div>
+    <div class="form-group">
+      <input class="form-control"type="text" name="image" placeholder="image url">
+    </div>
+    <div class="form-group">
+      <input class="form-control"type="text" name="description" placeholder="description">
+    </div>
+    <div class="form-group">
+      <button class= "btn btn-md btn-primary btn-block">Submit Campground!</button>
+    </div>
+  </form>	
+</div>

@@ -1,5 +1,4 @@
-<%- include("partials/header") %>
-
+<% layout('layouts/boilerplate.ejs')%>
 
 <div class="container">
 	<header class ="jumbotron">
@@ -17,7 +16,7 @@
 	</header>
 
 	<div class="row text-center" style="display:flex; flex-wrap: wrap;">
-		<% campgrounds.forEach((campground) => { %>
+		<% for (let campground of campgrounds){%>
 			<div class="col-md-3 col-sm-6">
 				<div class="thumbnail">
 					<img src="<%=campground.image%>">
@@ -29,8 +28,6 @@
 					</p>
 				</div>
 			</div>
-		<% }); %>
+		<% } %>
 	</div>			
 </div>
-		
-		<%- include("partials/footer") %>
