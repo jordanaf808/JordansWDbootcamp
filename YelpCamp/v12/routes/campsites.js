@@ -10,8 +10,9 @@ const express    	 		= require("express"),
       port       	 		= process.env.PORT || 3000,
       router          = express.Router();
       
-const Campground      = require("../models/campground");
-const Comment         = require("../models/comment");
+const Campground      = require("../models/campground"),
+      Campsite        = require("../models/campsite"),
+      Comment         = require("../models/comment");
 
 // axios has built in body parser.
 // app.use(bodyParser.urlencoded({extended: true}));
@@ -83,13 +84,30 @@ router.get("/show/:id", async (req, res) => {
     const recData = response.data;
     mediaData = medias.data.RECDATA;
     data = {recData, mediaData}
-    console.log(response.data.METADATA)
-    // spread object into ejs template, so i have direct access to object.
-    res.render("campsites/show", {data});
-  } catch (e) {
-    console.log("oh no.", e)
-  }
-  });
+    const newCampsite = {name: recData.FacilityName, id: id, geometry: recData.GEOJSON};
+    // Campground.findbyid if no create, if yes populate
+    Campsite.findOne({'id': id})
+      .populate("comments")
+      .exec((err, foundCampsite) => {
+        if(err || !foundCampsite){
+          console.log('creating' + id);
+          Campsite.create(newCampsite, (err, foundCampsite) => {
+            if(err){
+            console.log(err);
+            } else {
+              console.log(foundCampsite.name);
+              res.render("campsites/show", {data, foundCampsite});
+            }
+          }); 
+        } else {
+          console.log('found'+id);
+          res.render("campsites/show", {data, foundCampsite});    
+        }
+      }); 
+    } catch (e) {
+      console.log("oh no.", e)
+    }
+});
 
 // 404 route
 

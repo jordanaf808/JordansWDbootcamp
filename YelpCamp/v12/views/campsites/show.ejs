@@ -38,11 +38,9 @@
 					<h5 class="pull-right">$/night</h5>
 					<h3><a><%=data.recData["FacilityName"]%></a></h3>
 					<p><%-data.recData.FacilityDescription%></p>
-					<p>
-						<em>Submitted By: </em>
-					</p>
+
 					<div class="text-center">
-						<a class="btn btn-success" href="/campgrounds/comments/new">Add A New Comment</a>
+						<a class="btn btn-success" href="/campsites/<%=foundCampsite.id%>/comments/new">Add A New Comment</a>
 				</div>
 					 <!-- display 'edit' and 'delete' btn only when original user is logged in. 
 						You must first check if someone is logged in, '&&' if so, whether their
@@ -64,16 +62,23 @@
 						</h2>
 					</div>
 					<div id="collapseFour" class="collapse" aria-labelledby="collapseFour" data-parent="#accordionExample">
-				
+						<% foundCampsite.comments.forEach((comment)=>{ %>
 						<div class="card-body mb-2 p-0"> 
 							<div class="card-header p-1" style="justify-content: space-between;">	
-							<strong class="card-title">     </strong>							
+							<strong class="card-title"><%= comment.author.username %></strong>							
 							<span class="text-muted">10 days ago</span>
 							</div>
-							<p class="card-text my-2">     </p>
-							
+							<p class="card-text my-2"><%= comment.text %></p>
+							<% if(currentUser && comment.author.id.equals(currentUser._id)){ %>
+								<a class="btn btn-xs btn-outline-warning" href="/campsites/<%=foundCampsite.id%>/comments/<%=comment._id%>/edit">
+									Edit Comment
+								</a>
+								<form class="delete-form" action="/campsites/<%=foundCampsite.id%>/comments/<%=comment._id%>?_method=DELETE" method=POST>
+									<input type="submit" class="btn btn-xs btn-outline-danger" value="Delete">
+								</form>
+							<% } %>
 						</div>
-
+						<% }); %>
 					</div>
 				</div>
 
@@ -113,10 +118,6 @@
 </div>	
 
 <script>
-	
-</script>
-
-<script>
 	window.onload = function() {
 		let item = document.querySelector('div.carousel-item')
 		let indicator = document.querySelector('ol.carousel-indicators li')
@@ -129,8 +130,8 @@
 	
 <script>
 	function initMap(){
-		const lat = <%= data.recData.GEOJSON.COORDINATES[0] %>;
-		const lng = <%= data.recData.GEOJSON.COORDINATES[1] %>;
+		const lat = <%- data.recData.GEOJSON.COORDINATES[0] %>;
+		const lng = <%- data.recData.GEOJSON.COORDINATES[1] %>;
 		const center = {lat: lat, lng: lng };
 		const map = new google.maps.Map(document.getElementById("map"), {
 			zoom: 8,
@@ -152,5 +153,5 @@
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJss5OZ9rprm3qA-4F1XiH0OYvrLBKPE8&callback=initMap" type="text/javascript"></script>
 
-<a href="/campgrounds">Go Back To Campgrounds.</a>
+<a href="javascript:history.back()">Go Back To Campsites.</a>
 <%- include("../partials/footer") %>

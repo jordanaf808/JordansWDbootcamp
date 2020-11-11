@@ -11,6 +11,7 @@ const express    	 		=  require("express"),
 	  	flash			 			= require("connect-flash"),
 	  	numeral		 			= require("numeral"),
 	  	Campground 	 		= require("./models/campground"),
+	  	Campsite 	 			= require("./models/campsite"),
 	  	Comment	 	 			= require("./models/comment"),
 	  	User		 	 			= require("./models/user"),
 	  	seedDB	 	 			= require("./seeds"),
@@ -72,6 +73,7 @@ app.use((req, res, next)=>{
 
 app.use(indexRoutes);
 app.use("/campgrounds/:id/comments", commentsRoutes);
+app.use("/campsites/:id/comments", commentsRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campsites", campsitesRoutes);
 
