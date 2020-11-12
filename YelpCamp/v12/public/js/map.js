@@ -120,7 +120,7 @@ map.on('load', function () {
   new mapboxgl.Popup()
   .setLngLat(coordinates)
   .setHTML(
-    `<b style="text-transform: capitalize;">${name}</b><br>${loc}<br><a href="/campsites/show/${id}" class="btn btn-primary show-btn">More Information.</a>`
+    `<b style="text-transform: capitalize;">${name}</b><br>${loc}<br><a href="/campsites/show/${id}" class="btn btn-primary btn-sm show-btn">More Information.</a>`
   )
   .addTo(map);
   });

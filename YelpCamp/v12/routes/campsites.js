@@ -25,21 +25,16 @@ axios.defaults.headers = {
 // const url = "https://ridb.recreation.gov/api/v1/activities/"
 // const url = '/recareas';
 
-const params = {
-  query: "camping",
-  // state: "CA",
-  limit: 50,
-  // full: false,
-  sort: "Date"
-}
+// ==========|  INDEX  |========== \\
 
 router.get('/', async (req, res) => {
   try {
+    const params = {query: "camping", limit: 50, sort: "Date"} // state: "CA", full: false,
     const response = await axios.get('/facilities', {params});
-    console.log(response.status)
-    const recData = await response.data.RECDATA;
+    console.log(response.status);
+    const recData = response.data.RECDATA;
     const maps = recData.filter(item => (item.GEOJSON.COORDINATES));
-    const mapData = await maps.map(item => (
+    const mapData = maps.map(item => (
       {properties: {title: item.FacilityName}, geometry: item.GEOJSON, id: item.FacilityID}
     ));
     console.log(mapData);
@@ -49,28 +44,32 @@ router.get('/', async (req, res) => {
   }
 });
 
-// =====|   Search Route  |===== \\
+// ==========|   SEARCH  |========== \\
 
 router.get('/search', async (req, res) => {
   try {
-    console.log('QUERY: '+req.query)
-    console.log('PARAMS: '+req.params)
+    console.log('QUERY: '+req.query);
+    console.log('PARAMS: '+req.params);
     const search = req.query.search
     const state = req.query.state
     const activity = req.query.activities
     const limit = req.query.limit
     const searchParams = {query: search, activity, state, limit, sort: "Date", query: search}
     const response = await axios.get('/facilities', {params: searchParams});
-    console.log(response.data.METADATA)
-    const recData = await response.data.RECDATA;
+    const recData = response.data.RECDATA;
+    const maps = recData.filter(item => (item.GEOJSON.COORDINATES));
+    const mapData = maps.map(item => (
+      {properties: {title: item.FacilityName}, geometry: item.GEOJSON, id: item.FacilityID}));
+    console.log(response.data.METADATA);
     // console.log(recData)
-    res.render("index", {recData});
+    res.render("campsites/index", {recData, mapData});
   } catch (e) {
     console.log("oh no.", e)
   }
 });
 
-//SHOW - show more info about campground.
+// ==========|  SHOW  |========== \\
+
 router.get("/show/:id", async (req, res) => {
     // ':id' can be accessed through req.param. use destructuring.
     try {
@@ -109,7 +108,7 @@ router.get("/show/:id", async (req, res) => {
     }
 });
 
-// 404 route
+// ==========|  404  |========== \\
 
 router.use((req, res) => {
   // place after routes. if user doesn't select 

@@ -1,8 +1,8 @@
 <%- include("../partials/header") %>
 <div class="container-fluid" style="height: 100%;">
 	<div class="row mx-2">
-		<div class="col-md-7 mt-2">
-			<div class="card mb-4 p-3 thumbnail">
+		<div class="col-lg-7 mt-2">
+			<div class="card m-xs-0 m-sm-5 p-3 thumbnail">
 				<!-- // ==========|  Carousel  |========== \\ -->
 
 				<% if(mediaData != null && mediaData.length>0){ %>
@@ -35,31 +35,24 @@
 					<% }; %>
 		
 				<div class="caption">
-					<h5 class="pull-right">$/night</h5>
-					<h3><a><%=data.recData["FacilityName"]%></a></h3>
-					<p><%-data.recData.FacilityDescription%></p>
+					<h1><b><%=data.recData["FacilityName"]%></b></h1>
+					<div><%-data.recData.FacilityDescription%></div>
 
-					<div class="text-center">
-						<a class="btn btn-success" href="/campsites/<%=foundCampsite.id%>/comments/new">Add A New Comment</a>
 				</div>
 					 <!-- display 'edit' and 'delete' btn only when original user is logged in. 
 						You must first check if someone is logged in, '&&' if so, whether their
 						ID matches the original poster. -->
 					
-				</div>
 			</div>
 		</div>
 
-		<div class="col-md-5 mt-2 map-box">
+		<div class="col-lg-5 p-0 mt-3 mt-lg-5 map-box">
 			<div class="accordion m-1" id="accordionExample">
-
 				<div class="card camp-info rounded">
 					<div class="card-header" id="headingFour">
-						<h2 class="mb-0">
-							<button class="btn btn-link w-100" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
-								See Comments
-							</button>
-						</h2>
+						<button class="btn btn-primary" style="width: auto; padding: .375em 2.2em;" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+							See Comments
+						</button>
 					</div>
 					<div id="collapseFour" class="collapse" aria-labelledby="collapseFour" data-parent="#accordionExample">
 						<% foundCampsite.comments.forEach((comment)=>{ %>
@@ -79,9 +72,12 @@
 							<% } %>
 						</div>
 						<% }); %>
+						<div class="card-header text-center">
+							<a class="btn btn-success" href="/campsites/<%=foundCampsite.id%>/comments/new">Add A New Comment</a>
+						</div>
 					</div>
-				</div>
 
+				</div>
 				<div class="card camp-info rounded">
 					<div class="card-header" id="headingTwo">
 						<h2 class="mb-0">
@@ -130,15 +126,15 @@
 	
 <script>
 	function initMap(){
-		const lat = <%- data.recData.GEOJSON.COORDINATES[0] %>;
-		const lng = <%- data.recData.GEOJSON.COORDINATES[1] %>;
+		const lat = <%- data.recData.GEOJSON.COORDINATES[1] %>;
+		const lng = <%- data.recData.GEOJSON.COORDINATES[0] %>;
 		const center = {lat: lat, lng: lng };
 		const map = new google.maps.Map(document.getElementById("map"), {
 			zoom: 8,
 			center: center,
 			scrollwheel: false
 		});
-		const contentString = "null"
+		const contentString = "<h5><%=data.recData["FacilityName"]%></h5>"
 		const infowindow = new google.maps.InfoWindow({
 			content: contentString
 		});
