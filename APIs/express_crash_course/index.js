@@ -31,10 +31,10 @@ app.get('/api/members/:id', (req, res) => {
 	//Check if theres no member with that id
 	const found = members.some(member => member.id === parseInt(req.params.id));
 	if(found){
-	//get any parameter, in this case .id > res.send(req.params.id);
-	//request the json array 'members' and 'filter()' through it for that id
-	//req.params.id DOES NOT return a NUM. it returns a 'String'.
-	//use 'parseInt' to turn it to a number.
+	// .some() looks in an array to find if the function "member"
+	//is truthy or not. "member" looks in the "members" array to see if 
+	//"member.id === req.params.id" is truthy.
+	//	If truthy, then find that member('s) and put it in the response.
 	res.json(members.filter(member => member.id === parseInt(req.params.id)));
 	} else {
 		res.status(400).json({ msg: `Member Not Found with id:${req.params.id}`})
